@@ -10,33 +10,41 @@ export const fetchCardsImagesAsync = createAsyncThunk(
 );
 
 const initialState = {
-  score: 0,
+  hitPoints: 0,
+  errorPoints: 0,
+  isLoading: false,
   cards: [],
-  matchedCards: [],
-  flippedCards: [],
 };
 
 const gameSlice = createSlice({
   name: "game",
   initialState,
   reducers: {
-    setScore(state, action) {
-      state.score = action.payload;
+    setHitPoints(state, action) {
+      state.hitPoints = action.payload;
+    },
+    setErrorPoints(state, action) {
+      state.errorPoints = action.payload;
     },
     setCards(state, action) {
       state.cards = action.payload;
     },
-    setMatchedCards(state, action) {
-      state.matchedCards = action.payload;
-    },
-    setFlippedCards(state, action) {
-      state.flippedCards = action.payload;
+    setIsLoading(state, action) {
+      state.isLoading = action.payload;
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchCardsImagesAsync.fulfilled, (state, action) => {
-      state.cards = action.payload;
-    });
+    builder
+      .addCase(fetchCardsImagesAsync.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchCardsImagesAsync.fulfilled, (state, action) => {
+        state.cards = action.payload;
+        state.isLoading = false;
+      })
+      .addCase(fetchCardsImagesAsync.rejected, (state) => {
+        state.isLoading = false;
+      });
   },
 });
 
