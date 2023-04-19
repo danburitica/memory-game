@@ -25,7 +25,7 @@ const gameOverModal = async ({
 }) => {
   const modalConfig = {
     title: `Hey, ${user}!`,
-    text: `You finished the game with ${hits} hits and ${misses} misses 🥳`,
+    text: `You finished the game with ${hits+1} hits and ${misses} misses 🥳`,
     width: "auto",
     padding: "1em",
     color: "#211A1D",
