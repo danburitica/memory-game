@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import GameBoard from "../../components/GameBoard/GameBoard";
-import ScoreBoard from "../../components/ScoreBoard/ScoreBoard";
 import { fetchCardsImagesAsync } from "./slices/gameSlice";
 
 const App = () => {
@@ -28,12 +27,7 @@ const App = () => {
     );
   }
 
-  return (
-    <>
-      <ScoreBoard />
-      <GameBoard cards={cards} />
-    </>
-  );
+  return <GameBoard cards={cards} />;
 };
 
 export default App;
