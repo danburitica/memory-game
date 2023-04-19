@@ -10,8 +10,8 @@ export const fetchCardsImagesAsync = createAsyncThunk(
 );
 
 const initialState = {
-  hitPoints: 0,
-  errorPoints: 0,
+  hits: 0,
+  errors: 0,
   isLoading: false,
   cards: [],
 };
@@ -20,18 +20,18 @@ const gameSlice = createSlice({
   name: "game",
   initialState,
   reducers: {
-    setHitPoints(state) {
-      state.hitPoints += 1;
+    incrementHits(state) {
+      state.hits += 1;
     },
-    setErrorPoints(state) {
-      state.errorPoints += 1;
+    incrementErrors(state) {
+      state.errors += 1;
     },
     setCards(state, action) {
       state.cards = action.payload;
     },
-    setNewGame(state) {
-      state.hitPoints = 0;
-      state.errorPoints = 0;
+    resetGame(state) {
+      state.hits = 0;
+      state.errors = 0;
     },
   },
   extraReducers: (builder) => {
@@ -49,7 +49,7 @@ const gameSlice = createSlice({
   },
 });
 
-export const { setCards, setHitPoints, setErrorPoints, setNewGame } =
+export const { setCards, incrementHits, incrementErrors, resetGame } =
   gameSlice.actions;
 
 export default gameSlice.reducer;

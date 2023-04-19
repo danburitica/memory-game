@@ -4,8 +4,8 @@ import Card from "../Card/Card";
 import ScoreBoard from "../ScoreBoard/ScoreBoard";
 import shuffleArray from "../../utils/shuffleArray";
 import {
-  setErrorPoints,
-  setHitPoints,
+  incrementErrors,
+  incrementHits,
 } from "../../containers/App/slices/gameSlice";
 import Modal from "../../utils/modal";
 
@@ -14,66 +14,63 @@ const GameBoard = ({ cards }) => {
   const [flippedCards, setFlippedCards] = useState([]);
   const [isDisabled, setIsDisabled] = useState(false);
   const user = useSelector((state) => state.user.name);
-  const hits = useSelector((state) => state.game.hitPoints);
-  const misses = useSelector((state) => state.game.errorPoints);
+  const hits = useSelector((state) => state.game.hits);
+  const misses = useSelector((state) => state.game.errors);
   const dispatch = useDispatch();
 
-  const getMaxGameCards = (initialGameCards) => {
-    const halfGameCards = Math.ceil(initialGameCards.length / 2);
+  const getMaxGameCards = (shuffledCards) => {
+    const halfGameCards = Math.ceil(shuffledCards.length / 2);
     if (window.innerWidth < 1024) {
-      return initialGameCards.slice(0, halfGameCards);
+      return shuffledCards.slice(0, halfGameCards);
     } else {
-      return initialGameCards;
+      return shuffledCards;
     }
   };
 
   const createGameBoard = async () => {
-    const shuffledCards = shuffleArray([...cards]);
+    const shuffledCards = shuffleArray(cards);
     const maxGameCards = getMaxGameCards(shuffledCards);
     const duplicateCards = shuffleArray([...maxGameCards, ...maxGameCards]).map(
-      (card, i) => {
-        return {
-          ...card,
-          flipped: false,
-          index: i,
-        };
-      }
+      (card, i) => ({
+        ...card,
+        flipped: false,
+        index: i,
+      })
     );
     setGameCards(duplicateCards);
     !user && (await Modal.usernameRequestModal({ dispatch }));
   };
 
   const handleClickCard = (clickedCard) => {
-    if (isDisabled) return;
+    if (isDisabled || clickedCard?.flipped) return;
 
-    if (!clickedCard.flipped) {
-      clickedCard.flipped = true;
+    clickedCard.flipped = true;
+    const currentFlippedCards = [...flippedCards, clickedCard];
+    setFlippedCards(currentFlippedCards);
 
-      const currentFlippedCards = [...flippedCards, clickedCard];
-      setFlippedCards(currentFlippedCards);
-
-      if (currentFlippedCards.length === 2) {
-        setIsDisabled(true);
-        if (currentFlippedCards[0].title === currentFlippedCards[1].title) {
-          dispatch(setHitPoints());
+    if (currentFlippedCards.length === 2) {
+      setIsDisabled(true);
+      if (currentFlippedCards[0].title === currentFlippedCards[1].title) {
+        dispatch(incrementHits());
+        setIsDisabled(false);
+      } else {
+        setTimeout(() => {
+          dispatch(incrementErrors());
+          const updatedCards = gameCards.map((card) =>
+            currentFlippedCards.includes(card)
+              ? { ...card, flipped: false }
+              : card
+          );
+          setGameCards(updatedCards);
           setIsDisabled(false);
-        } else {
-          setTimeout(() => {
-            dispatch(setErrorPoints());
-            currentFlippedCards[0].flipped = false;
-            currentFlippedCards[1].flipped = false;
-            setGameCards(gameCards);
-            setIsDisabled(false);
-          }, 1000);
-        }
-
-        setFlippedCards([]);
+        }, 1000);
       }
 
-      setGameCards(gameCards);
+      setFlippedCards([]);
     }
 
-    if (gameCards.every((card) => card.flipped)) {
+    const areAllCardsFlipped = gameCards.every((card) => card.flipped);
+    if (areAllCardsFlipped) {
       setTimeout(async () => {
         await Modal.gameOverModal({
           user,

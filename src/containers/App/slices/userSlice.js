@@ -1,7 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const username = localStorage.getItem("username");
 const initialState = {
-  name: localStorage.getItem("username") || "",
+  name: username || null,
 };
 
 const userSlice = createSlice({
