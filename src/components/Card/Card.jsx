@@ -1,5 +1,5 @@
 import React from "react";
-import backCard from "./assets/backCard.png";
+import backCard from "./assets/backCard.webp";
 
 const Card = React.memo(({ card, handleClickCard }) => {
   return (
