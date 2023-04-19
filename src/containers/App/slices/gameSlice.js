@@ -20,17 +20,18 @@ const gameSlice = createSlice({
   name: "game",
   initialState,
   reducers: {
-    setHitPoints(state, action) {
-      state.hitPoints = action.payload;
+    setHitPoints(state) {
+      state.hitPoints += 1;
     },
-    setErrorPoints(state, action) {
-      state.errorPoints = action.payload;
+    setErrorPoints(state) {
+      state.errorPoints += 1;
     },
     setCards(state, action) {
       state.cards = action.payload;
     },
-    setIsLoading(state, action) {
-      state.isLoading = action.payload;
+    setNewGame(state) {
+      state.hitPoints = 0;
+      state.errorPoints = 0;
     },
   },
   extraReducers: (builder) => {
@@ -48,7 +49,7 @@ const gameSlice = createSlice({
   },
 });
 
-export const { setName, setScore, setCards, setMatchedCards, setFlippedCards } =
+export const { setCards, setHitPoints, setErrorPoints, setNewGame } =
   gameSlice.actions;
 
 export default gameSlice.reducer;
